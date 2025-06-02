@@ -67,8 +67,8 @@ class DomSem dom where
 
 instance DomSem MInt where
   -- Completar
-  sem (Const a)     = \_ -> Just a
-  sem (Var v)        = \σ -> Just $ σ v
+  sem (Const a)    = \_ -> Just a
+  sem (Var v)      = \σ -> Just $ σ v
   sem (Plus e1 e2) = \σ -> ((+)-^-) (sem e1 σ) (sem e2 σ)
   sem (Op e)       = \σ ->  (negate -^) (sem e σ)
   sem (Prod e1 e2) = \σ ->  ((*) -^-) (sem e1 σ)  (sem e2 σ)
@@ -95,9 +95,12 @@ update σ v n v' = if v == v' then n else σ v'
 rest :: Σ -> Var -> (Σ -> Σ)
 rest σ v σ' v'= if v == v' then σ v else σ' v'
 
-F :: Expr Bool -> Expr Ω -> Σ -> (Ω -> Ω)
-F (CBool False) c σ = \_ -> Normal σ
-F (CBool True)  c σ = \
+f_big :: Expr MBool -> Expr Ω ->(Σ -> Ω) -> (Σ -> Ω)
+f_big b c = \f -> \σ -> (case (sem b σ) of
+    Just False -> Normal σ
+    Just True  -> (f *.) (sem c σ)
+    _ -> Abort σ)
+
 instance DomSem Ω where
   -- Completar
   sem Skip           = \σ -> Normal σ
@@ -105,10 +108,7 @@ instance DomSem Ω where
   sem (Seq c1 c2)    = \σ -> ((sem c2) *.) (sem c1 σ)                                                 -- c ; c'
   sem (Cond b c1 c2) = \σ -> (sem b σ, σ) >>== (\bv -> if bv then sem c1 σ else sem c2 σ)             -- if b then c else c'
   sem (Newvar v e c) = \σ -> (sem e σ, σ) >>== (\val -> ((rest σ v) †.) (sem c (update σ v val)))     -- newvar v := e in e'
-  sem (While  b c)   = fix (\loop -> \σ ->(sem b σ, σ) >>== (\bv ->
-                                  if bv
-                                    then (loop *.) (sem c σ)
-                                    else Normal σ))
+  sem (While b c)   = fix (f_big b c)                                                     -- while b do c
   -- # Comandos FallasNormal
   sem Fail           = \σ -> Abort σ       -- fail
   sem (Catch c1 c2)  = \σ -> ((sem c2) +.) (sem c2 σ)       -- catch c with c'
