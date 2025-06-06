@@ -10,7 +10,7 @@ En primer lugar, se definen los tipos para `Var`, `Σ` y los dominios semántico
 
 A continuación, se presentan las definiciones de funciones auxiliares que se utilizarán para dar la semántica de los distintos dominios. Entre estas se encuentran algunas funciones vistas en la parte teórica, como:
 
-- `resty` y `f_big`, que se usan para que la semántica sea dirigida por la sintaxis.
+- `rest` y `f_big`, que se usan para que la semántica sea dirigida por la sintaxis.
 - `(*.)`, `(†.)` y `(+.)`, que se definen para garantizar la propagación del comportamiento ante errores.
 
 También se incluyen funciones para manejar los problemas de tipos que se presentan al utilizar `MInt` y `MBool` para representar los dominios semánticos de los enteros y booleanos, respectivamente:
@@ -19,7 +19,7 @@ También se incluyen funciones para manejar los problemas de tipos que se presen
 - `-^-`
 - `-^`
 
-Finalmente, se define la función `fix`, que se utiliza para obtener el menor punto fijo de una función, y la función `eval`, usada para modificar el estado que recibe la semántica a lo largo de la evaluación.
+Finalmente, se define la función `fix`, que se utiliza para obtener el menor punto fijo de una función, y la función `update`, usada para modificar el estado que recibe la semántica a lo largo de la evaluación.
 
 ## 3. Semánticas de los dominios
 
