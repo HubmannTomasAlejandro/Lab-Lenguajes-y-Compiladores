@@ -133,7 +133,7 @@ instance DomSem Ω where
   sem (While b c)    = fix (f_big b c)                                                                -- while b do c
   -- # Comandos Fallas
   sem Fail           = \σ -> Abort σ                                                                  -- fail
-  sem (Catch c1 c2)  = \σ -> ((sem c2) +.) (sem c2 σ)                                                 -- catch c with c'
+  sem (Catch c1 c2)  = \σ -> ((sem c2) +.) (sem c1 σ)                                                 -- catch c with c'
   -- # Comandos IO
   sem (SOut e)       = \σ -> (sem e σ, σ) >>== (\val -> Out(val , Normal σ))                          -- !e
   sem (SIn  v)       = \σ -> In(\n -> Normal(update σ v n))                                           -- ?v
